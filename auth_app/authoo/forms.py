@@ -1,31 +1,23 @@
 from django import forms
-from .models import Person, Student, Faculty, Campus, Job
+from django.contrib.auth.models import User
+from authoo.models import Etudiant, Employe
 
-class UserProfileForm(forms.ModelForm):
-    matricule = forms.CharField(required=False)
-    niveau = forms.CharField(required=False)
-    poste = forms.CharField(required=False)
-    salaire = forms.FloatField(required=False)
-
-    faculty = forms.ModelChoiceField(queryset=Faculty.objects.all(), required=False)
-    campus = forms.ModelChoiceField(queryset=Campus.objects.all(), required=False)
-    job = forms.ModelChoiceField(queryset=Job.objects.all(), required=False)
-
-    class Meta:
-        model = Person
-        fields = ['username', 'password', 'nom', 'prenom', 'date_naissance', 'tlf']
-        widgets = {
-            'password': forms.PasswordInput(),
-            'date_naissance': forms.DateInput(attrs={'type': 'date'})
-        }
-
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=150)
+# Formulaire pour User (nom d’utilisateur et mot de passe)
+class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
 
-class StudentProfilForm(forms.ModelForm):
     class Meta:
-        model = Student
-        fields = ['matricule', 'niveau']
+        model = User
+        fields = ['username', 'password']
 
+# Formulaire Employé
+class EmployeForm(forms.ModelForm):
+    class Meta:
+        model = Employe
+        fields = ['nom', 'prenom', 'date_naissance', 'tel', 'faculty', 'office', 'job', 'campus']
 
+# Formulaire Étudiant
+class EtudiantForm(forms.ModelForm):
+    class Meta:
+        model = Etudiant
+        fields = ['nom', 'prenom', 'date_naissance', 'tel', 'faculty', 'cursus', 'niveau']

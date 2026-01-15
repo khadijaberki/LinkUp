@@ -17,8 +17,8 @@
 
         .form-container {
             border: 2px solid #4e73df;
-            padding: 25px;
-            width: 320px;
+            padding: 30px 25px;
+            width: 350px;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -27,37 +27,56 @@
         .form-container h2 {
             text-align: center;
             margin-bottom: 20px;
+            color: #4e73df;
         }
 
-        .form-container input[type="text"],
-        .form-container input[type="password"] {
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
 
-        .form-container input[type="submit"] {
-            width: 100%;
-            padding: 10px;
+        .form-group input[type="submit"] {
             background-color: #4e73df;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
         }
 
-        .form-container input[type="submit"]:hover {
+        .form-group input[type="submit"]:hover {
             background-color: #2e59d9;
         }
 
-        .form-container a {
-            display: block;
+        .links {
             text-align: center;
             margin-top: 10px;
-            text-decoration: none;
+        }
+
+        .links a {
             color: #4e73df;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -67,25 +86,36 @@
 <div class="form-container">
     <h2>Connexion</h2>
 
-    <form action="/login/" method="post">
-        <table>
-            <tr>
-       <td>{% csrf_token %}</td>
-       </tr>
-       <tr>
-         <td> {{ form.as_p }}</td>
-       </tr>
-       <tr>
-        <td><input type="submit" value="Se connecter"></td>
-        <td><a href="/register/">Créer un compte</a></td>
-    </tr> 
-</table>
-       
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_username">Nom d'utilisateur</label>
+            <input type="text" name="username" id="id_username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="id_password">Mot de passe</label>
+            <input type="password" name="password" id="id_password" required>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Se connecter">
+        </div>
+
+        <div class="links">
+            <a href="{% url 'register' %}">Créer un compte</a>
+        </div>
     </form>
 </div>
 
 </body>
 </html>
+
 
 
 

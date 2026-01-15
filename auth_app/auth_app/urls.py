@@ -4,8 +4,8 @@ from authoo import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', views.login),
-    path('register/', views.register),
-    path('welcome/', views.welcome),  # page après connexion
+    path('login/', views.login_view, name='login'),
+    path('register/', views.register_view, name='register'),
+    path('welcome/', views.welcome, name='welcome'),  # page après connexion
 ]
 
