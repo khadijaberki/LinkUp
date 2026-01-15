@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Création d'un compte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            text-align: center;
+        }
+
+        .form-container {
+            margin: 50px auto;
+            width: 400px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .form-container h1 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            padding: 5px;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 2px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #2e59d9;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #224abe;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Création d'un compte</h1>
+       <form action="/register/" method="post">
+         <table>
+           <td><legend>Vous etes :</legend></td> 
+           <td>
+            <select name="choix">
+                <option>employee</option>
+                <option>student</option>
+            </select>
+           </td>
+         </table>
+            {% csrf_token %}
+            <table>
+
+                {{ studentForm.as_table }}
+            </table>
+            <input type="submit" value="Créer un compte">
+        </form>
+    </div>
+</body>
+</html>
+
+
+
