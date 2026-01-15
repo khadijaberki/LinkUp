@@ -1,88 +1,146 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Création d'un compte</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<title>Création d'un compte</title>
 
-        .form-container {
-            margin: 50px auto;
-            width: 400px;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    text-align: center;
+}
+.form-container {
+    margin: 50px auto;
+    width: 420px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+table { width: 100%; }
+td { padding: 5px; }
+input, select {
+    width: 100%;
+    padding: 8px;
+}
+.hidden { display: none; }
+</style>
 
-        .form-container h1 {
-            margin-bottom: 20px;
-        }
+<script>
+function changeRole() {
+    const role = document.getElementById("role").value;
 
-        table {
-            width: 100%;
-        }
+    document.getElementById("employeFields").style.display =
+        role === "employe" ? "table-row-group" : "none";
 
-        td {
-            padding: 5px;
-            text-align: left;
-        }
+    document.getElementById("studentFields").style.display =
+        role === "etudiant" ? "table-row-group" : "none";
+}
+</script>
 
-        input[type="text"],
-        input[type="password"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 2px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        input[type="submit"] {
-            width: 100%;
-            padding: 12px;
-            background-color: #2e59d9;
-            color: white;
-            font-size: 16px;
-            border-radius: 5px;
-            margin-top: 15px;
-            cursor: pointer;
-            border: none;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #224abe;
-        }
-    </style>
 </head>
-<body>
-    <div class="form-container">
-        <h1>Création d'un compte</h1>
-       <form action="/register/" method="post">
-         <table>
-           <td><legend>Vous etes :</legend></td> 
-           <td>
-            <select name="choix">
-                <option>employee</option>
-                <option>student</option>
-            </select>
-           </td>
-         </table>
-            {% csrf_token %}
-            <table>
 
-                {{ studentForm.as_table }}
-            </table>
-            <input type="submit" value="Créer un compte">
-        </form>
-    </div>
+<body>
+<div class="form-container">
+<h1>Création d'un compte</h1>
+
+<form method="post">
+{% csrf_token %}
+<table>
+
+<tr>
+<td>Vous êtes :</td>
+<td>
+<select id="role" name="role" onchange="changeRole()">
+<option value="">-- Choisir --</option>
+<option value="employe">Employé</option>
+<option value="etudiant">Étudiant</option>
+</select>
+</td>
+</tr>
+
+<tr><td>Nom</td><td><input type="text" name="nom"></td></tr>
+<tr><td>Prénom</td><td><input type="text" name="prenom"></td></tr>
+<tr><td>Date de naissance</td><td><input type="date" name="date_naissance"></td></tr>
+<tr><td>Téléphone</td><td><input type="text" name="tel"></td></tr>
+<tr><td>Mot de passe</td><td><input type="password" name="password"></td></tr>
+
+<tr>
+<td>Faculté</td>
+<td>
+<select name="faculty">
+<option>Faculté des Sciences et Ingénierie</option>
+<option>Faculté des Sciences Économiques</option>
+<option>Faculté des Lettres</option>
+<option>Faculté des Sciences et Techniques</option>
+</select>
+</td>
+</tr>
+
+</table>
+
+<!-- CHAMPS EMPLOYÉ -->
+<table id="employeFields" class="hidden">
+<tr>
+<td>Office</td>
+<td><input type="text" name="office"></td>
+</tr>
+
+<tr>
+<td>Job</td>
+<td>
+<select name="job">
+<option>Développeur</option>
+<option>Ingénieur Systèmes Embarqués</option>
+<option>Technicien Informatique</option>
+<option>Administrateur Réseau</option>
+</select>
+</td>
+</tr>
+<tr>
+    <td>campus:</td>
+    <td>
+        <select>
+            <option>Campus Casablanca</option>
+          <option>Campus Rabat</option>
+        <option>Campus Marrakech</option>
+      <option>Campus Fès</option>
+           
+        </select>
+    </td>
+</tr>
+
+
+<!-- CHAMPS ÉTUDIANT -->
+<table id="studentFields" class="hidden">
+
+
+<tr>
+<td>Cursus</td>
+<td>
+<select name="cursus">
+<option>Licence</option>
+<option>Master</option>
+<option>Cycle Ingénieur</option>
+</select>
+</td>
+</tr>
+<tr>
+    <td>Niveau:</td>
+    <td>
+        <input  type="text">
+    </td>
+</tr>
+</table>
+
+<input type="submit" value="Créer un compte">
+
+</form>
+</div>
 </body>
 </html>
+
 
 
 
