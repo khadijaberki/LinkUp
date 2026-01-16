@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password  # <-- important !
@@ -106,11 +106,33 @@ def welcome(request):
 @login_required
 def profile_view(request, username):
     user = get_object_or_404(User, username=username)
-    profile = get_object_or_404(Profile, user=user)
+    profile, created = Profile.objects.get_or_create(user=user)
 
-    return render(request, 'profile.html', {
-        'profile': profile
-    })
+    statut = ""
+    tel = ""
+
+    try:
+        etudiant = Etudiant.objects.get(user=user)
+        statut = "Étudiant"
+        tel = etudiant.tel
+    except Etudiant.DoesNotExist:
+        try:
+            employe = Employe.objects.get(user=user)
+            statut = "Employé"
+            tel = employe.tel
+        except Employe.DoesNotExist:
+            pass
+
+    context = {
+        'profile': profile,
+        'nom': user.last_name,
+        'prenom': user.first_name,
+        'tel': tel,
+        'statut': statut,
+    }
+
+    return render(request, 'authoo/profile.html', context)
+
 @login_required
 def edit_profile(request):
     profile = get_object_or_404(Profile, user=request.user)

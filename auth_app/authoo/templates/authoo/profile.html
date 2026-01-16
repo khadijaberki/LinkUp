@@ -1,9 +1,20 @@
 <!DOCTYPE html>
 <html lang="fr">
+    {% load static %}
+
 <head>
     <meta charset="UTF-8">
     <title>Profil</title>
     <style>
+        .profile-img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 4px solid #4e73df;
+}
+
         body {
             font-family: Arial;
             background-color: #f4f6f9;
@@ -22,7 +33,7 @@
             height: 120px;
             border-radius: 50%;
         }
-        a, button {
+        a {
             display: block;
             margin-top: 10px;
             text-decoration: none;
@@ -31,23 +42,39 @@
             padding: 8px;
             border-radius: 5px;
         }
+        .profile-title {
+         font-size: 28px;
+         color: #4e73df;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+}
+
     </style>
 </head>
 <body>
 
 <div class="profile-box">
-    {% if profile.image %}
-        <img src="{{ profile.image.url }}">
-    {% endif %}
+      {% if profile.image %}
+    <img src="{{ profile.image.url }}" class="profile-img">
+{% else %}
+    <img src="{% static 'images/default-avatar.png' %}" class="profile-img">
+{% endif %}
+ <h1 class="profile-title">Profil</h1>
 
-    <h2>{{ profile.user.username }}</h2>
+ 
+
+
+    <p><strong>Nom :</strong> {{ nom }}</p>
+    <p><strong>Prénom :</strong> {{ prenom }}</p>
+    <p><strong>Téléphone :</strong> {{ tel }}</p>
+    <p><strong>Statut :</strong> {{ statut }}</p>
+
     <p>{{ profile.bio }}</p>
 
     {% if request.user == profile.user %}
         <a href="{% url 'edit_profile' %}">Modifier le profil</a>
-    {% else %}
-        <a href="{% url 'add_friend' profile.user.id %}">Ajouter comme ami</a>
     {% endif %}
+
 </div>
 
 </body>
