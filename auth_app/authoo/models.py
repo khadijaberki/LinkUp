@@ -45,4 +45,25 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
+    #
+    # authoo/models.py
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True)
+    tel = models.CharField(max_length=20, blank=True)
+    faculty = models.CharField(max_length=100, blank=True)
 
+    def __str__(self):
+        return self.user.username
+
+
+class Friend(models.Model):
+    from_user = models.ForeignKey(
+        User, related_name='friends_from', on_delete=models.CASCADE
+    )
+    to_user = models.ForeignKey(
+        User, related_name='friends_to', on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user}"

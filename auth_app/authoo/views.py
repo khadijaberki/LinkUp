@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password  # <-- important !
 from authoo.models import Employe, Etudiant  # <-- importer les modèles corrects
+from .models import Profile, Friend
+from django.contrib.auth.decorators import login_required
 
 def register_view(request):
     if request.method == 'POST':
@@ -72,4 +74,40 @@ def login_view(request):
 def welcome(request):
     return render(request, 'welcome.html')
 
+@login_required
+def profile_view(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = get_object_or_404(Profile, user=user)
 
+    return render(request, 'profile.html', {
+        'profile': profile
+    })
+@login_required
+def edit_profile(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if request.method == 'POST':
+        profile.bio = request.POST.get('bio')
+        if request.FILES.get('image'):
+            profile.image = request.FILES.get('image')
+        profile.save()
+        return redirect('profile', username=request.user.username)
+
+    return render(request, 'edit_profile.html', {
+        'profile': profile
+    })
+@login_required
+def add_friend(request, user_id):
+    to_user = get_object_or_404(User, id=user_id)
+
+    if to_user != request.user:
+        Friend.objects.get_or_create(
+            from_user=request.user,
+            to_user=to_user
+        )
+
+    return redirect('profile', username=to_user.username)
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')

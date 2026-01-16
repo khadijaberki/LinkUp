@@ -1,11 +1,82 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    {% load static %}
+
     <meta charset="UTF-8">
     <title>Bienvenue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left img {
+            height: 50px; /* Taille du logo */
+            margin-right: 15px;
+        }
+
+        .header-left span {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header-right a button {
+            margin-left: 10px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4e73df;
+            color: white;
+            cursor: pointer;
+        }
+
+        .header-right a button:hover {
+            background-color: #2e59d9;
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bienvenue sur la page d'accueil !</h1>
+
+<header>
+    <div class="header-left">
+        <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
+        <span>Bienvenue, {{ request.user.first_name }} {{ request.user.last_name }} !</span>
+    </div>
+    <div class="header-right">
+        <a href="{% url 'profile' request.user.username %}"><button>Profil</button></a>
+        <a href="{% url 'logout' %}"><button>Déconnexion</button></a>
+    </div>
+</header>
+
+<div class="container">
+    <h2>Contenu principal de la page</h2>
+    <p>Ici tu peux ajouter les autres informations ou boutons que tu veux.</p>
+</div>
+
 </body>
 </html>
+
+
 
