@@ -22,6 +22,12 @@ class Employe(Person):
 class Etudiant(Person):
     cursus = models.CharField(max_length=100)
     niveau = models.CharField(max_length=50)
+    sexe = models.CharField(
+    max_length=1,
+    choices=[('M', 'Masculin'), ('F', 'Féminin')],
+    default='M'   # valeur par défaut
+)
+
 
     def __str__(self):
         return f"Étudiant {self.nom}"

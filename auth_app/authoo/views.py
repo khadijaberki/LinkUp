@@ -71,9 +71,38 @@ def login_view(request):
     return render(request, 'login.html')
 
 
-def welcome(request):
+#def welcome(request):
     return render(request, 'welcome.html')
+@login_required
+def welcome(request):
+    user = request.user
+    profile_info = None
 
+    # Vérifier si l'utilisateur est étudiant
+   # try:
+    #    etudiant = Etudiant.objects.get(user=user)
+     #   profile_info = f"Etudiant en {etudiant.niveau} {etudiant.cursus}"
+    #except etudiant.DoesNotExist:
+    #    pass
+    try:
+      etudiant = Etudiant.objects.get(user=user)
+      titre = "Étudiante" if etudiant.sexe == 'F' else "Étudiant"
+      profile_info = f"{titre} en {etudiant.niveau} {etudiant.cursus}"
+    except Etudiant.DoesNotExist:
+      profile_info = ""
+
+    # Vérifier si l'utilisateur est employé
+    try:
+        employee = Employe.objects.get(user=user)
+        profile_info = f"Employé - Poste : {employee.job} - Office : {employee.office}"
+    except Employe.DoesNotExist:
+        pass
+
+    context = {
+        'profile_info': profile_info
+    }
+
+    return render(request, 'welcome.html', context)
 @login_required
 def profile_view(request, username):
     user = get_object_or_404(User, username=username)

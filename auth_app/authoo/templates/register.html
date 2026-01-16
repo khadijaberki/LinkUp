@@ -65,7 +65,14 @@ function changeRole() {
 <tr><td>Date de naissance</td><td><input type="date" name="date_naissance"></td></tr>
 <tr><td>Téléphone</td><td><input type="text" name="tel"></td></tr>
 <tr><td>Mot de passe</td><td><input type="password" name="password"></td></tr>
-
+<tr>
+<td><label>Sexe :</label></td>
+<td><select name="sexe" required>
+    <option value="">-- Choisir --</option>
+    <option value="M">Masculin</option>
+    <option value="F">Féminin</option>
+</select></td>
+</tr>
 <tr>
 <td>Faculté</td>
 <td>
@@ -114,9 +121,9 @@ function changeRole() {
 <td>Cursus</td>
 <td>
 <select name="cursus">
-<option>Licence</option>
-<option>Master</option>
-<option>Cycle Ingénieur</option>
+<option>IDIA</option>
+<option>CDL</option>
+<option>GIE</option>
 </select>
 </td>
 </tr>
