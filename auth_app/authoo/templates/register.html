@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Création d'un compte</title>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -187,7 +186,7 @@ function changeRole() {
 
     <!-- RIGHT SIDE (FORM) -->
     <div class="form-container">
-        <h1>Créer un compte</h1>
+        <h1>Inscription</h1>
 
         <form method="post">
             {% csrf_token %}
@@ -281,6 +280,7 @@ function changeRole() {
             <div class="form-group">
                 <label>Cursus</label>
                 <select name="cursus">
+                    <option>-- Choisir votre cursus --</option>
                     <option>IDIA</option>
                     <option>CDL</option>
                     <option>GIE</option>
