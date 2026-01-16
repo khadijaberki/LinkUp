@@ -5,139 +5,200 @@
 <title>Création d'un compte</title>
 
 <style>
+:root {
+    --primary: #4e73df;
+    --primary-dark: #2e59d9;
+    --bg: #f4f6fb;
+    --border: #ddd;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
-    text-align: center;
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #f8f9fc);
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
 }
+
 .form-container {
-    margin: 50px auto;
-    width: 420px;
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    width: 480px;
+    background: white;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
 }
-table { width: 100%; }
-td { padding: 5px; }
+
+h1 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
 input, select {
     width: 100%;
-    padding: 8px;
+    padding: 11px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
 }
-.hidden { display: none; }
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px;
+    background: var(--primary);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--primary-dark);
+}
+
+.hidden {
+    display: none;
+}
+
+.section-title {
+    margin: 20px 0 10px;
+    font-weight: 600;
+    color: var(--primary);
+}
 </style>
 
 <script>
 function changeRole() {
     const role = document.getElementById("role").value;
-
     document.getElementById("employeFields").style.display =
-        role === "employe" ? "table-row-group" : "none";
-
+        role === "employe" ? "block" : "none";
     document.getElementById("studentFields").style.display =
-        role === "etudiant" ? "table-row-group" : "none";
+        role === "etudiant" ? "block" : "none";
 }
 </script>
 
 </head>
 
 <body>
+
 <div class="form-container">
-<h1>Création d'un compte</h1>
+<h1>Créer un compte</h1>
 
 <form method="post">
 {% csrf_token %}
-<table>
 
-<tr>
-<td>Vous êtes :</td>
-<td>
-<select id="role" name="role" onchange="changeRole()">
-<option value="">-- Choisir --</option>
-<option value="employe">Employé</option>
-<option value="etudiant">Étudiant</option>
-</select>
-</td>
-</tr>
+<div class="form-group">
+    <label>Vous êtes</label>
+    <select id="role" name="role" onchange="changeRole()" required>
+        <option value="">-- Choisir --</option>
+        <option value="employe">Employé</option>
+        <option value="etudiant">Étudiant</option>
+    </select>
+</div>
 
-<tr><td>Nom</td><td><input type="text" name="nom"></td></tr>
-<tr><td>Prénom</td><td><input type="text" name="prenom"></td></tr>
-<tr><td>Date de naissance</td><td><input type="date" name="date_naissance"></td></tr>
-<tr><td>Téléphone</td><td><input type="text" name="tel"></td></tr>
-<tr><td>Mot de passe</td><td><input type="password" name="password"></td></tr>
-<tr>
-<td><label>Sexe :</label></td>
-<td><select name="sexe" required>
+<div class="form-group"><label>Nom</label><input type="text" name="nom"></div>
+<div class="form-group"><label>Prénom</label><input type="text" name="prenom"></div>
+<div class="form-group"><label>Date de naissance</label><input type="date" name="date_naissance"></div>
+<div class="form-group"><label>Téléphone</label><input type="text" name="tel"></div>
+<div class="form-group"><label>Mot de passe</label><input type="password" name="password"></div>
+
+<div class="form-group">
+<label>Sexe</label>
+<select name="sexe" required>
     <option value="">-- Choisir --</option>
     <option value="M">Masculin</option>
     <option value="F">Féminin</option>
-</select></td>
-</tr>
-<tr>
-<td>Faculté</td>
-<td>
-<select name="faculty">
-<option>Faculté des Sciences et Ingénierie</option>
-<option>Faculté des Sciences Économiques</option>
-<option>Faculté des Lettres</option>
-<option>Faculté des Sciences et Techniques</option>
 </select>
-</td>
-</tr>
+</div>
 
-<tbody id="employeFields" class="hidden">
-<tr>
-<td>Office</td>
-<td><input type="text" name="office"></td>
-</tr>
+<div class="form-group">
+<label>Université</label>
+<select name="faculty" required>
+    <option value="">-- Choisir une université --</option>
+    <option value="Mohammed Premier Oujda">Université Mohammed Premier – Oujda</option>
+    <option value="Hassan II Casablanca">Université Hassan II – Casablanca</option>
+    <option value="Sidi Mohammed Ben Abdellah Fès">Université Sidi Mohammed Ben Abdellah – Fès</option>
+    <option value="Moulay Ismail Meknès">Université Moulay Ismail – Meknès</option>
+    <option value="Abdelmalek Essaadi Tétouan">Université Abdelmalek Essaadi – Tétouan</option>
+    <option value="Hassan Premier Settat">Université Hassan Premier – Settat</option>
+    <option value="Sultan Moulay Slimane Beni Mellal">Université Sultan Moulay Slimane – Beni Mellal</option>
+</select>
+</div>
 
-<tr>
-<td>Job</td>
-<td>
+<div id="employeFields" class="hidden">
+<div class="section-title">Informations Employé</div>
+<div class="form-group"><label>Office</label><input type="text" name="office"></div>
+<div class="form-group">
+<label>Job</label>
 <select name="job">
 <option>Développeur</option>
 <option>Ingénieur Systèmes Embarqués</option>
 <option>Technicien Informatique</option>
 <option>Administrateur Réseau</option>
 </select>
-</td>
-</tr>
-
-<tr>
-<td>Campus</td>
-<td>
+</div>
+<div class="form-group">
+<label>Campus</label>
 <select name="campus">
+<option>Campus Oujda</option>
 <option>Campus Casablanca</option>
-<option>Campus Rabat</option>
-<option>Campus Marrakech</option>
 <option>Campus Fès</option>
+<option>Campus Meknès</option>
+<option>Campus Tétouan</option>
+<option>Campus Settat</option>
+<option>Campus Beni Mellal</option>
 </select>
-</td>
-</tr>
-</tbody>
+</div>
+</div>
 
-<tbody id="studentFields" class="hidden">
-<tr>
-<td>Cursus</td>
-<td>
+<div id="studentFields" class="hidden">
+<div class="section-title">Informations Étudiant</div>
+<div class="form-group">
+<label>Cursus</label>
 <select name="cursus">
 <option>IDIA</option>
 <option>CDL</option>
 <option>GIE</option>
 </select>
-</td>
-</tr>
-<tr>
-<td>Niveau</td>
-<td><input type="text" name="niveau"></td>
-</tr>
-</tbody>
+</div>
+<div class="form-group">
+    <label>Niveau</label>
+    <select name="niveau" required>
+        <option value="">-- Choisir le niveau --</option>
+        <option value="1ere">1ère année</option>
+        <option value="2eme">2ème année</option>
+        <option value="licence">Licence</option>
+    </select>
+</div>
 
-</table>
+</div>
 
-<input type="submit" value="Créer un compte">
+<button type="submit">Créer un compte</button>
 
 </form>
 </div>
+
 </body>
 </html>
