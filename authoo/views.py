@@ -3,12 +3,18 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from authoo.models import Employe, Etudiant
-from .models import Profile, Friend
+from .models import Profile, Friend, Message
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
 
+
+import random
+from django.db import IntegrityError
+
 def register_view(request):
+    error = None
+
     if request.method == 'POST':
         role = request.POST.get('role')
         nom = request.POST.get('nom')
@@ -17,48 +23,85 @@ def register_view(request):
         tel = request.POST.get('tel')
         password = request.POST.get('password')
         faculty = request.POST.get('faculty')
+        sexe = request.POST.get('sexe')
 
-        user = User.objects.create(
-            username=f"{nom.lower()}.{prenom.lower()}",
-            first_name=prenom,
-            last_name=nom,
-            password=make_password(password)
-        )
+        if not role or not nom or not prenom or not date_naissance or not tel or not password or not faculty:
+            error = "Veuillez remplir tous les champs obligatoires."
+            return render(request, 'register.html', {'error': error})
 
-        if role == 'etudiant':
-            cursus = request.POST.get('cursus')
-            niveau = request.POST.get('niveau')
-            Etudiant.objects.create(
-                user=user,
-                nom=nom,
-                prenom=prenom,
-                date_naissance=date_naissance,
-                tel=tel,
-                faculty=faculty,
-                cursus=cursus,
-                niveau=niveau
+        # Générer un username unique
+        base_username = f"{nom.lower()}.{prenom.lower()}"
+        while True:
+            username = f"{base_username}{random.randint(100,9999)}"
+            if not User.objects.filter(username=username).exists():
+                break
+
+        try:
+            user = User.objects.create(
+                username=username,
+                first_name=prenom,
+                last_name=nom,
+                password=make_password(password)
             )
 
-        elif role == 'employe':
-            office = request.POST.get('office')
-            job = request.POST.get('job')
-            campus = request.POST.get('campus')
-            Employe.objects.create(
-                user=user,
-                nom=nom,
-                prenom=prenom,
-                date_naissance=date_naissance,
-                tel=tel,
-                faculty=faculty,
-                office=office,
-                job=job,
-                campus=campus
-            )
+            # Créer profile vide
+            Profile.objects.create(user=user, tel=tel, faculty=faculty)
 
-        return redirect('welcome')
+            # Créer Etudiant ou Employe
+            if role == 'etudiant':
+                cursus = request.POST.get('cursus')
+                niveau = request.POST.get('niveau')
+                if not cursus or not niveau:
+                    error = "Veuillez remplir tous les champs étudiant."
+                    user.delete()
+                    return render(request, 'register.html', {'error': error})
 
-    return render(request, 'register.html')
+                Etudiant.objects.create(
+                    user=user,
+                    nom=nom,
+                    prenom=prenom,
+                    date_naissance=date_naissance,
+                    tel=tel,
+                    faculty=faculty,
+                    sexe=sexe,
+                    cursus=cursus,
+                    niveau=niveau
+                )
 
+            elif role == 'employe':
+                office = request.POST.get('office')
+                job = request.POST.get('job')
+                campus = request.POST.get('campus')
+                if not office or not job or not campus:
+                    error = "Veuillez remplir tous les champs employé."
+                    user.delete()
+                    return render(request, 'register.html', {'error': error})
+
+                Employe.objects.create(
+                    user=user,
+                    nom=nom,
+                    prenom=prenom,
+                    date_naissance=date_naissance,
+                    tel=tel,
+                    faculty=faculty,
+                    sexe=sexe,
+                    office=office,
+                    job=job,
+                    campus=campus
+                )
+
+            # Authentifier et connecter automatiquement
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect('welcome')
+            else:
+                error = "Erreur lors de la connexion automatique."
+
+        except IntegrityError:
+            error = "Un problème est survenu. Veuillez réessayer."
+
+    return render(request, 'register.html', {'error': error})
 
 def login_view(request):
     if request.method == 'POST':
@@ -78,16 +121,6 @@ def login_view(request):
 
 
 @login_required
-def add_friend(request, user_id):
-    from django.contrib.auth.models import User
-    from .models import Friend
-
-    friend_user = User.objects.get(id=user_id)
-    Friend.objects.get_or_create(user=request.user, friend=friend_user)
-    return redirect('home')
-
-
-@login_required
 def welcome(request):
     user = request.user
     profile_info = ""
@@ -104,46 +137,18 @@ def welcome(request):
         except Employe.DoesNotExist:
             pass
 
-    # Liste des amis avec leur type
-@login_required
-def welcome(request):
-    user = request.user
-    profile_info = ""
-
-    # Profil utilisateur
-    try:
-        etudiant = Etudiant.objects.get(user=user)
-        titre = "Étudiante" if getattr(etudiant, 'sexe', '') == 'F' else "Étudiant"
-        profile_info = f"{titre} en {etudiant.niveau} {etudiant.cursus}"
-    except Etudiant.DoesNotExist:
-        try:
-            employe = Employe.objects.get(user=user)
-            profile_info = f"Employé - Poste : {employe.job} - Office : {employe.office}"
-        except Employe.DoesNotExist:
-            pass
-
-    # Ajouter un ami si POST et id d’ami envoyé
+    # --- Gestion POST ---
     if request.method == "POST":
+        # Ajouter un ami
         friend_id = request.POST.get("add_friend_id")
         if friend_id:
             if int(friend_id) != user.id:
                 Friend.objects.get_or_create(user=user, friend_id=int(friend_id))
 
-    # Liste des amis avec leur type
-    friends = Friend.objects.filter(user=user).select_related("friend")
-    friends_with_type = []
-    for f in friends:
-        if Etudiant.objects.filter(user=f.friend).exists():
-            f.type = "Etudiant"
-        else:
-            f.type = "Employe"
-        friends_with_type.append(f)
-
-    # Recherche utilisateur
-    search_result = None
-    search_msg = ""
-    if request.method == "POST":
+        # Recherche utilisateur
         keyword = request.POST.get("search")
+        search_result = None
+        search_msg = ""
         if keyword:
             etu = Etudiant.objects.filter(Q(nom__icontains=keyword) | Q(prenom__icontains=keyword)).first()
             emp = None
@@ -157,11 +162,34 @@ def welcome(request):
             else:
                 search_msg = "Aucun utilisateur trouvé"
 
+        # Publier un message
+        content = request.POST.get("message_content")
+        if content:
+            Message.objects.create(user=user, content=content)
+
+    else:
+        search_result = None
+        search_msg = ""
+
+    # Liste des amis avec leur type
+    friends = Friend.objects.filter(user=user).select_related("friend")
+    friends_with_type = []
+    for f in friends:
+        if Etudiant.objects.filter(user=f.friend).exists():
+            f.type = "Etudiant"
+        else:
+            f.type = "Employe"
+        friends_with_type.append(f)
+
+    # Tous les messages
+    messages = Message.objects.all().order_by('-created_at')  # dernier message en premier
+
     context = {
         "friends": friends_with_type,
         "profile_info": profile_info,
         "search_result": search_result,
         "search_msg": search_msg,
+        "messages": messages,
     }
 
     return render(request, "welcome.html", context)
@@ -242,7 +270,6 @@ def logout_view(request):
     return redirect('login')
 
 
-
 @login_required
 def add_friend(request, user_id):
     if user_id != request.user.id:
@@ -251,6 +278,3 @@ def add_friend(request, user_id):
             friend_id=user_id
         )
     return redirect("welcome")
-
-
-

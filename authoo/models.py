@@ -12,27 +12,27 @@ class Person(models.Model):
 
     class Meta:
         abstract = True
-class Employe(Person):
-    office = models.CharField(max_length=100)
-    job = models.CharField(max_length=100)
-    campus = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"Employé {self.nom}"
 class Etudiant(Person):
-    cursus = models.CharField(max_length=100)
-    niveau = models.CharField(max_length=50)
+    cursus = models.CharField(max_length=100, blank=True, null=True)
+    niveau = models.CharField(max_length=50, blank=True, null=True)
     sexe = models.CharField(
-    max_length=1,
-    choices=[('M', 'Masculin'), ('F', 'Féminin')],
-    default='M'   # valeur par défaut
-)
-
+        max_length=1,
+        choices=[('M', 'Masculin'), ('F', 'Féminin')],
+        default='M'
+    )
 
     def __str__(self):
         return f"Étudiant {self.nom}"
 
-from django.db import models
+class Employe(Person):
+    office = models.CharField(max_length=100, blank=True, null=True)
+    job = models.CharField(max_length=100, blank=True, null=True)
+    campus = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"Employé {self.nom}"
+
+
 
 class Faculty(models.Model):
     name = models.CharField(max_length=100)
@@ -62,8 +62,6 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-from django.db import models
-from django.contrib.auth.models import User
 
 class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
