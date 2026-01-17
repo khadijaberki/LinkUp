@@ -304,25 +304,7 @@
         {% endfor %}
     </ul>
 </div>
-::
-<ul>
-    {% for msg in messages %}
-        <li>
-            {{ msg.user.first_name }} {{ msg.user.last_name }} :
-            {{ msg.content }}
-            
-            {% if msg.user == request.user %}
-                <!-- Formulaire POST pour supprimer le message -->
-                <form method="POST" action="{% url 'delete_message' msg.id %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" style="background-color:#dc3545; padding:3px 6px; border:none; border-radius:3px; color:white;">Supprimer</button>
-                </form>
-            {% endif %}
-        </li>
-    {% empty %}
-        <li>Aucun message publié pour l'instant.</li>
-    {% endfor %}
-</ul>
+
 
 
 <script>

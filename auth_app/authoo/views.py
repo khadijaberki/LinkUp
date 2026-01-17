@@ -235,12 +235,3 @@ def add_friend(request, user_id):
             friend_id=user_id
         )
     return redirect("welcome")
-@login_required
-def delete_message(request, message_id):
-    message = get_object_or_404(Message, id=message_id)
-    
-    # Vérifie que seul l'auteur du message peut le supprimer
-    if message.user == request.user:
-        message.delete()
-    
-    return redirect('welcome')
