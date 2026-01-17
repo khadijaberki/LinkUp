@@ -1,24 +1,65 @@
 <!DOCTYPE html>
 <html lang="fr">
-    {% load static %}
+{% load static %}
 
 <head>
     <meta charset="UTF-8">
     <title>Profil</title>
     <style>
-        .profile-img {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 15px;
-    border: 4px solid #4e73df;
-}
-
+        /* ======= Global ======= */
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
         }
+        a {
+            text-decoration: none;
+        }
+
+        /* ======= Header ======= */
+        header {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .header-left img {
+            height: 50px;
+            margin-right: 15px;
+        }
+        .header-left span {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* espace entre les boutons */
+        }
+        .header-right a button,
+        .header-right button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4e73df;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .header-right a button:hover,
+        .header-right button:hover {
+            background-color: #2e59d9;
+        }
+
+        /* ======= Profile Box ======= */
         .profile-box {
             width: 400px;
             margin: 50px auto;
@@ -28,41 +69,70 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             text-align: center;
         }
-        img {
-            width: 120px;
-            height: 120px;
+        .profile-img {
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 4px solid #4e73df;
         }
-        a {
-            display: block;
-            margin-top: 10px;
+        .profile-title {
+            font-size: 28px;
+            color: #4e73df;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .profile-box p {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #333;
+        }
+        .profile-box a {
+            display: inline-block;
+            margin-top: 15px;
             text-decoration: none;
             color: white;
             background: #4e73df;
-            padding: 8px;
+            padding: 8px 15px;
             border-radius: 5px;
+            font-weight: bold;
         }
-        .profile-title {
-         font-size: 28px;
-         color: #4e73df;
-        margin-bottom: 20px;
-        letter-spacing: 1px;
-}
-
+        .profile-box a:hover {
+            background-color: #2e59d9;
+        }
     </style>
 </head>
+
 <body>
+<header>
+    <div class="header-left">
+        <a href="{% url 'welcome' %}">
+            <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
+        </a>
+        <span>
+            {{ request.user.first_name }} {{ request.user.last_name }} !
+            {% if profile_info %}
+                <br>{{ profile_info }}
+            {% endif %}
+        </span>
+    </div>
+
+    <div class="header-right">
+        <a href="{% url 'profile' request.user.username %}"><button>Profil</button></a>
+        <button id="logoutBtn">Se déconnecter</button>
+    </div>
+</header>
+
 
 <div class="profile-box">
-      {% if profile.image %}
-    <img src="{{ profile.image.url }}" class="profile-img">
-{% else %}
-    <img src="{% static 'images/default-avatar.png' %}" class="profile-img">
-{% endif %}
- <h1 class="profile-title">Profil</h1>
+    {% if profile.image %}
+        <img src="{{ profile.image.url }}" class="profile-img">
+    {% else %}
+        <img src="{% static 'images/default-avatar.png' %}" class="profile-img">
+    {% endif %}
 
- 
-
+    <h1 class="profile-title">Profil</h1>
 
     <p><strong>Nom :</strong> {{ nom }}</p>
     <p><strong>Prénom :</strong> {{ prenom }}</p>
@@ -74,8 +144,7 @@
     {% if request.user == profile.user %}
         <a href="{% url 'edit_profile' %}">Modifier le profil</a>
     {% endif %}
-
 </div>
-
 </body>
 </html>
+

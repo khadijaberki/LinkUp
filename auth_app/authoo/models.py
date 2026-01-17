@@ -55,21 +55,30 @@ class Job(models.Model):
     # authoo/models.py
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True)
+    bio = models.TextField(blank=True, null=True)
     tel = models.CharField(max_length=20, blank=True)
     faculty = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.user.username
 
+from django.db import models
+from django.contrib.auth.models import User
 
-class Friend(models.Model):
-    from_user = models.ForeignKey(
-        User, related_name='friends_from', on_delete=models.CASCADE
-    )
-    to_user = models.ForeignKey(
-        User, related_name='friends_to', on_delete=models.CASCADE
-    )
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.from_user} -> {self.to_user}"
+        return f"{self.user.username} : {self.content}"
+
+class Friend(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_friends")
+    friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friend_of")
+
+    class Meta:
+        unique_together = ('user', 'friend')
+
+
+   

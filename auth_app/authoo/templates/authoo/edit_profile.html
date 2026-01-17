@@ -1,24 +1,81 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Modifier Profil</title>
+    <title>Modifier le profil</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f4f6f9;
+        }
+
+        .form-box {
+            width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #4e73df;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4e73df;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #2e59d9;
+        }
+    </style>
 </head>
 <body>
 
-<h2 style="text-align:center;">Modifier votre profil</h2>
+<div class="form-box">
+    <h2>Modifier le profil</h2>
 
-<form method="POST" enctype="multipart/form-data" style="width:300px;margin:auto;">
-    {% csrf_token %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
-    <label>Bio :</label><br>
-    <textarea name="bio" rows="4" style="width:100%;">{{ profile.bio }}</textarea><br><br>
+        <label>Nom</label>
+        <input type="text" name="nom" value="{{ nom }}" required>
 
-    <label>Image :</label><br>
-    <input type="file" name="image"><br><br>
+        <label>Prénom</label>
+        <input type="text" name="prenom" value="{{ prenom }}" required>
 
-    <button type="submit">Enregistrer</button>
-</form>
+        <label>Téléphone</label>
+        <input type="text" name="tel" value="{{ tel }}">
+
+
+        <button type="submit">Enregistrer les modifications</button>
+    </form>
+</div>
 
 </body>
 </html>

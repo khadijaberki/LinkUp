@@ -11,5 +11,6 @@ urlpatterns = [
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('add-friend/<int:user_id>/', views.add_friend, name='add_friend'),
     path('logout/', views.logout_view, name='logout'),
+    path('delete-message/<int:message_id>/', views.delete_message, name='delete_message'),
 ]
 
