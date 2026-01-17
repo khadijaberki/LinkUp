@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmation</title>
+</head>
+<body>
+
+    <h2>Voulez-vous vraiment vous déconnecter ?</h2>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Se déconnecter</button>
+    </form>
+
+    <br>
+
+    <a href="{% url 'welcome' %}">
+        <button type="button">Annuler</button>
+    </a>
+
+</body>
+</html>

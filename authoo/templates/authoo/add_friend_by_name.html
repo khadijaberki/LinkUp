@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if message %}
+    <p>{{ message }}</p>
+{% endif %}
+
+{% if result_user %}
+    <p>{{ result_user.first_name }} {{ result_user.last_name }}</p>
+    <a href="{% url 'add_friend' result_user.id %}">
+        <button>Ajouter</button>
+    </a>
+{% endif %}
+
+</body>
+</html>
