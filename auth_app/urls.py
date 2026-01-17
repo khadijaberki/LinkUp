@@ -9,8 +9,8 @@ urlpatterns = [
     path('welcome/', views.welcome, name='welcome'),  # page après connexion
     path('profile/<str:username>/', views.profile_view, name='profile'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
-   path('add_friend_by_name/', views.add_friend_by_name, name='add_friend_by_name'),
-
+     path('add-friend/<int:user_id>/', views.add_friend, name='add_friend'),
+     
 
 
     path('logout/', views.logout_view, name='logout'),

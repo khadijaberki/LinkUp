@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect,get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password  # <-- important !
-from authoo.models import Employe, Etudiant  # <-- importer les modèles corrects
+from django.contrib.auth.hashers import make_password
+from authoo.models import Employe, Etudiant
 from .models import Profile, Friend
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+
 
 def register_view(request):
     if request.method == 'POST':
@@ -17,12 +18,11 @@ def register_view(request):
         password = request.POST.get('password')
         faculty = request.POST.get('faculty')
 
-        # Création de l'utilisateur Django
         user = User.objects.create(
             username=f"{nom.lower()}.{prenom.lower()}",
             first_name=prenom,
             last_name=nom,
-            password=make_password(password)  # hasher le mot de passe
+            password=make_password(password)
         )
 
         if role == 'etudiant':
@@ -38,6 +38,7 @@ def register_view(request):
                 cursus=cursus,
                 niveau=niveau
             )
+
         elif role == 'employe':
             office = request.POST.get('office')
             job = request.POST.get('job')
@@ -54,7 +55,7 @@ def register_view(request):
                 campus=campus
             )
 
-        return redirect('login')
+        return redirect('welcome')
 
     return render(request, 'register.html')
 
@@ -64,69 +65,107 @@ def login_view(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
-            return redirect('welcome')  # rediriger vers la page d'accueil
+            return redirect('welcome')
         else:
-            return render(request, 'login.html', {'error': 'Nom d’utilisateur ou mot de passe incorrect.'})
+            return render(request, 'login.html', {
+                'error': 'Nom d’utilisateur ou mot de passe incorrect.'
+            })
+
     return render(request, 'login.html')
 
 
-#def welcome(request):
-    #return render(request, 'welcome.html')
-  
-
+@login_required
 def add_friend(request, user_id):
     from django.contrib.auth.models import User
     from .models import Friend
+
     friend_user = User.objects.get(id=user_id)
     Friend.objects.get_or_create(user=request.user, friend=friend_user)
     return redirect('home')
+
+
 @login_required
 def welcome(request):
     user = request.user
     profile_info = ""
 
-    # Vérifier si étudiant
+    # Profil utilisateur
     try:
         etudiant = Etudiant.objects.get(user=user)
         titre = "Étudiante" if getattr(etudiant, 'sexe', '') == 'F' else "Étudiant"
         profile_info = f"{titre} en {etudiant.niveau} {etudiant.cursus}"
     except Etudiant.DoesNotExist:
-        pass
+        try:
+            employe = Employe.objects.get(user=user)
+            profile_info = f"Employé - Poste : {employe.job} - Office : {employe.office}"
+        except Employe.DoesNotExist:
+            pass
 
-    # Vérifier si employé
+    # Liste des amis avec leur type
+@login_required
+def welcome(request):
+    user = request.user
+    profile_info = ""
+
+    # Profil utilisateur
     try:
-        employe = Employe.objects.get(user=user)
-        profile_info = f"Employé - Poste : {employe.job} - Office : {employe.office}"
-    except Employe.DoesNotExist:
-        pass
+        etudiant = Etudiant.objects.get(user=user)
+        titre = "Étudiante" if getattr(etudiant, 'sexe', '') == 'F' else "Étudiant"
+        profile_info = f"{titre} en {etudiant.niveau} {etudiant.cursus}"
+    except Etudiant.DoesNotExist:
+        try:
+            employe = Employe.objects.get(user=user)
+            profile_info = f"Employé - Poste : {employe.job} - Office : {employe.office}"
+        except Employe.DoesNotExist:
+            pass
 
-    # Liste des amis
-    friends = Friend.objects.filter(user=user)
+    # Ajouter un ami si POST et id d’ami envoyé
+    if request.method == "POST":
+        friend_id = request.POST.get("add_friend_id")
+        if friend_id:
+            if int(friend_id) != user.id:
+                Friend.objects.get_or_create(user=user, friend_id=int(friend_id))
 
-    # IDs de mes amis
-    friends_ids = friends.values_list('friend__id', flat=True)
+    # Liste des amis avec leur type
+    friends = Friend.objects.filter(user=user).select_related("friend")
+    friends_with_type = []
+    for f in friends:
+        if Etudiant.objects.filter(user=f.friend).exists():
+            f.type = "Etudiant"
+        else:
+            f.type = "Employe"
+        friends_with_type.append(f)
 
-    # Tous les utilisateurs sauf moi et mes amis
-    all_users = User.objects.exclude(id__in=friends_ids).exclude(id=user.id)
+    # Recherche utilisateur
+    search_result = None
+    search_msg = ""
+    if request.method == "POST":
+        keyword = request.POST.get("search")
+        if keyword:
+            etu = Etudiant.objects.filter(Q(nom__icontains=keyword) | Q(prenom__icontains=keyword)).first()
+            emp = None
+            if not etu:
+                emp = Employe.objects.filter(Q(nom__icontains=keyword) | Q(prenom__icontains=keyword)).first()
 
-    # Messages (si tu as un modèle Message)
-    # messages = Message.objects.all()
-    # form = MessageForm()
+            if etu:
+                search_result = {"id": etu.user.id, "nom": etu.nom, "prenom": etu.prenom, "type": "Etudiant"}
+            elif emp:
+                search_result = {"id": emp.user.id, "nom": emp.nom, "prenom": emp.prenom, "type": "Employe"}
+            else:
+                search_msg = "Aucun utilisateur trouvé"
 
     context = {
-        'profile_info': profile_info,
-        'friends': friends,
-        'all_users': all_users,
-        # 'messages': messages,
-        # 'form': form,
+        "friends": friends_with_type,
+        "profile_info": profile_info,
+        "search_result": search_result,
+        "search_msg": search_msg,
     }
 
-    return render(request, 'welcome.html', context)
+    return render(request, "welcome.html", context)
 
-
-#
 
 @login_required
 def profile_view(request, username):
@@ -157,23 +196,20 @@ def profile_view(request, username):
     }
 
     return render(request, 'authoo/profile.html', context)
-    #
+
 
 @login_required
 def edit_profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
 
-    # Récupérer étudiant ou employé
     etudiant = Etudiant.objects.filter(user=request.user).first()
     employe = Employe.objects.filter(user=request.user).first()
 
     if request.method == 'POST':
-        # User
         request.user.first_name = request.POST.get('prenom')
         request.user.last_name = request.POST.get('nom')
         request.user.save()
 
-        # Téléphone
         tel = request.POST.get('tel')
         if etudiant:
             etudiant.tel = tel
@@ -182,15 +218,12 @@ def edit_profile(request):
             employe.tel = tel
             employe.save()
 
-        # Bio
         profile.bio = request.POST.get('bio')
 
-        # Image
         if request.FILES.get('image'):
             profile.image = request.FILES.get('image')
 
         profile.save()
-
         return redirect('profile', username=request.user.username)
 
     context = {
@@ -202,33 +235,22 @@ def edit_profile(request):
 
     return render(request, 'authoo/edit_profile.html', context)
 
-@login_required
-def add_friend(request, user_id):
-    friend_user = get_object_or_404(User, id=user_id)
-    # Ajouter l'amitié (à adapter selon ton modèle)
-    Friend.objects.get_or_create(user=request.user, friend=friend_user)
-    return redirect('welcome')
+
 @login_required
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+
 @login_required
-def add_friend_by_name(request):
-    query = request.GET.get('query', '').strip()
-    user = request.user
-    message = None
-    result_user = None
+def add_friend(request, user_id):
+    if user_id != request.user.id:
+        Friend.objects.get_or_create(
+            user=request.user,
+            friend_id=user_id
+        )
+    return redirect("welcome")
 
-    if query:
-        # Chercher par prénom ou nom
-        from django.db.models import Q
-        result_user = User.objects.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query)).exclude(id=user.id).first()
-        if not result_user:
-            message = "Aucun utilisateur trouvé"
 
-    context = {
-        'result_user': result_user,
-        'message': message,
-    }
-    return render(request, 'authoo/add_friend_by_name.html', context)
 

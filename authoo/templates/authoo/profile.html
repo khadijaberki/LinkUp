@@ -107,7 +107,9 @@
 <body>
 <header>
     <div class="header-left">
-        <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
+        <a href="{% url 'welcome' %}">
+            <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
+        </a>
         <span>
             {{ request.user.first_name }} {{ request.user.last_name }} !
             {% if profile_info %}
@@ -121,6 +123,7 @@
         <button id="logoutBtn">Se déconnecter</button>
     </div>
 </header>
+
 
 <div class="profile-box">
     {% if profile.image %}

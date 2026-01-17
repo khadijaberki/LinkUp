@@ -66,9 +66,12 @@ class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-
 class Friend(models.Model):
-   user = models.ForeignKey(User, related_name='friends', on_delete=models.CASCADE, null=True)
-   friend = models.ForeignKey(User, related_name='friend_of', on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_friends")
+    friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friend_of")
+
+    class Meta:
+        unique_together = ('user', 'friend')
+
 
    
