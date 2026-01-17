@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Modifier le profil</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #00776E; /* vert foncé */
+    --secondary: #aef044; /* vert clair */
+    --btn-light: rgba(255,255,255,0.85);
+    --btn-hover: rgba(255,255,255,1);
+    --bg-light: #f4f6f9;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Quicksand", sans-serif;
+    background-color: var(--bg-light);
+}
+
+/* ===== Header Gradient ===== */
+header {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    color: rgb(255, 255, 255);
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-left img {
+    height: 50px;
+    margin-right: 15px;
+}
+
+.header-left span {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-right a button,
+.header-right button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--btn-light);
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.header-right a button:hover,
+.header-right button:hover {
+    background-color: var(--btn-hover);
+}
+
+/* ===== Formulaire ===== */
+.form-box {
+    width: 100%;
+    max-width: 420px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+h2 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Bouton soumettre */
+button[type="submit"] {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-size: 400% 400%;
+}
+
+button[type="submit"]:hover {
+    animation: gradientMove 5s linear infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+</style>
+</head>
+
+<body>
+<header>
+    <div class="header-left">
+        <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
+        <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
+    </div>
+
+    <div class="header-right">
+        <a href="{% url 'profile' request.user.username %}"><button>Profil</button></a>
+        <button id="logoutBtn">Se déconnecter</button>
+    </div>
+</header>
+
+<div class="form-box">
+    <h2>Modifier le profil</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Nom</label>
+        <input type="text" name="nom" value="{{ nom }}" required>
+
+        <label>Prénom</label>
+        <input type="text" name="prenom" value="{{ prenom }}" required>
+
+        <label>Téléphone</label>
+        <input type="text" name="tel" value="{{ tel }}">
+
+        <button type="submit">Enregistrer les modifications</button>
+    </form>
+</div>
+</body>
+</html>

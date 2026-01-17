@@ -161,11 +161,21 @@ button:hover {
 <script>
 function changeRole() {
     const role = document.getElementById("role").value;
-    document.getElementById("employeFields").style.display =
-        role === "employe" ? "block" : "none";
-    document.getElementById("studentFields").style.display =
-        role === "etudiant" ? "block" : "none";
+    const isEmploye = role === "employe";
+    const isEtudiant = role === "etudiant";
+
+    document.getElementById("employeFields").style.display = isEmploye ? "block" : "none";
+    document.getElementById("studentFields").style.display = isEtudiant ? "block" : "none";
+
+    document.querySelectorAll("#employeFields [name]").forEach((el) => {
+        el.required = isEmploye;
+    });
+    document.querySelectorAll("#studentFields [name]").forEach((el) => {
+        el.required = isEtudiant;
+    });
 }
+
+document.addEventListener("DOMContentLoaded", changeRole);
 </script>
 
 </head>

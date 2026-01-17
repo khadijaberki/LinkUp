@@ -28,6 +28,11 @@ class Employe(Person):
     office = models.CharField(max_length=100, blank=True, null=True)
     job = models.CharField(max_length=100, blank=True, null=True)
     campus = models.CharField(max_length=100, blank=True, null=True)
+    sexe = models.CharField(
+        max_length=1,
+        choices=[('M', 'Masculin'), ('F', 'Féminin')],
+        default='M'
+    )
 
     def __str__(self):
         return f"Employé {self.nom}"
@@ -62,6 +67,8 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+from django.db import models
+from django.contrib.auth.models import User
 
 class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')

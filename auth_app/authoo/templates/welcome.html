@@ -1,0 +1,379 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Bienvenue</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #00776E;
+    --secondary: #aef044;
+    --bg-light: #f4f6f9;
+    --btn-light: rgba(255,255,255,0.85);
+    --btn-hover: rgba(255,255,255,1);
+    --card-bg: #fff;
+    --card-shadow: rgba(0,0,0,0.15);
+    --text-dark: #333;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Quicksand", sans-serif;
+    background-color: var(--bg-light);
+}
+
+/* ===== Header ===== */
+header {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-left img {
+    height: 50px;
+    margin-right: 15px;
+}
+
+.header-left span {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-right a button,
+.header-right button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--btn-light);
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.header-right a button:hover,
+.header-right button:hover {
+    background-color: var(--btn-hover);
+}
+
+/* ===== Main Layout ===== */
+.main-layout {
+    display: flex;
+    margin-top: 120px; /* space for fixed header */
+    gap: 30px;
+    padding: 0 20px;
+}
+
+/* ===== Friends Sidebar ===== */
+.friends-zone {
+    width: 260px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.friends-zone h3 {
+    margin: 0 0 10px;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.friends-zone select,
+.friends-zone input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    margin-bottom: 10px;
+}
+
+.friends-zone button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.friends-zone button:hover {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+/* Search result buttons smaller */
+#searchResult form button,
+#searchResult button {
+    width: auto;
+    padding: 5px 10px;
+    font-size: 12px;
+    margin: 3px 5px 3px 0;
+}
+
+/* ===== Messages Area ===== */
+.messages-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Publish Box */
+.publish-message {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--card-shadow);
+}
+
+.publish-message h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.publish-message textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: none;
+    font-family: inherit;
+}
+
+.publish-message button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.publish-message button:hover {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+}
+
+/* Messages List */
+.messages-list {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--card-shadow);
+}
+
+.messages-list h3 {
+    color: var(--primary);
+    margin-top: 0;
+}
+
+.messages-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.messages-list li {
+    background: var(--bg-light);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--card-shadow);
+    color: var(--text-dark);
+}
+
+/* ===== Modal Logout ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 25px 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 4px 15px var(--card-shadow);
+}
+
+.modal-content h3 { margin: 0 0 10px; }
+.modal-content p { font-size: 14px; color: #555; margin-bottom: 20px; }
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    flex: 1;
+    margin: 0 5px;
+}
+
+#cancelBtn { background-color: #f0f0f0; color: #333; }
+#confirmBtn { background-color: #e74c3c; color: white; }
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-left">
+        <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
+        <span>
+            {{ request.user.first_name }} {{ request.user.last_name }}
+            {% if profile_info %}
+                <br>{{ profile_info }}
+            {% endif %}
+        </span>
+    </div>
+
+    <div class="header-right">
+        <a href="{% url 'profile' request.user.username %}"><button>Profil</button></a>
+        <button id="logoutBtn">Se déconnecter</button>
+    </div>
+</header>
+
+<div class="main-layout">
+
+    <!-- Friends Sidebar -->
+    <div class="friends-zone">
+        <h3>Mes amis</h3>
+        <select id="friendsList" size="10">
+            {% for f in friends %}
+                <option value="{{ f.friend.id }}">{{ f.friend.first_name }} {{ f.friend.last_name }} ({{ f.type }})</option>
+            {% empty %}
+                <option>Aucun ami pour l'instant</option>
+            {% endfor %}
+        </select>
+
+        <div id="searchResult">
+            {% if search_result %}
+                <p>{{ search_result.prenom }} {{ search_result.nom }} ({{ search_result.type }})</p>
+                
+                <form method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_friend_id" value="{{ search_result.id }}">
+                    <button type="submit">Ajouter</button>
+                </form>
+
+                <button onclick="this.parentElement.innerHTML=''">Ignorer</button>
+            {% elif search_msg %}
+                <p>{{ search_msg }}</p>
+            {% endif %}
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="search" placeholder="Entrez nom ou prénom">
+            <button type="submit">Rechercher</button>
+        </form>
+    </div>
+
+    <!-- Messages / Publish Area -->
+    <div class="messages-area">
+        <div class="publish-message">
+            <h3>Publier un message</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <textarea name="message_content" rows="2" placeholder="Écrivez votre message..." required></textarea>
+                <button type="submit" name="publish_message">Publier</button>
+            </form>
+        </div>
+
+        <div class="messages-list">
+            <h3>Messages</h3>
+            <ul>
+                {% for msg in messages %}
+                    <li>{{ msg.user.first_name }} {{ msg.user.last_name }} : {{ msg.content }}</li>
+                {% empty %}
+                    <li>Aucun message publié pour l'instant.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal logout -->
+<div id="logoutModal" class="modal">
+  <div class="modal-content">
+    <h3>Se déconnecter ?</h3>
+    <p>Vous devrez vous reconnecter pour continuer à utiliser l'application.</p>
+    <div class="modal-buttons">
+      <button id="cancelBtn">Annuler</button>
+      <button id="confirmBtn">Se déconnecter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Modal logout
+const logoutBtn = document.getElementById('logoutBtn');
+const modal = document.getElementById('logoutModal');
+const cancelBtn = document.getElementById('cancelBtn');
+const confirmBtn = document.getElementById('confirmBtn');
+
+logoutBtn.onclick = () => modal.style.display = 'flex';
+cancelBtn.onclick = () => modal.style.display = 'none';
+confirmBtn.onclick = () => window.location.href = "{% url 'logout' %}";
+window.onclick = (event) => { if(event.target==modal) modal.style.display='none'; }
+</script>
+
+</body>
+</html>
+
+
+

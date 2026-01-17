@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+{% load static %}
+<head>
+<meta charset="UTF-8">
+<title>Profil</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #00776E; /* vert foncé */
+    --secondary: #aef044; /* vert clair */
+    --border: #ddd;
+    --bg-light: #f4f6f9;
+    --btn-light: rgba(255,255,255,0.85); /* boutons header clairs */
+    --btn-hover: rgba(255,255,255,1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Quicksand", sans-serif;
+    background-color: var(--bg-light);
+}
+
+/* ===== Header Gradient ===== */
+header {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    color: rgb(255, 255, 255);
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-left img {
+    height: 50px;
+    margin-right: 15px;
+}
+
+.header-left span {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-right a button,
+.header-right button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--btn-light);
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.header-right a button:hover,
+.header-right button:hover {
+    background-color: var(--btn-hover);
+}
+
+/* ===== Profile Box ===== */
+.profile-box {
+    width: 100%;
+    max-width: 420px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.profile-img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 4px solid var(--primary);
+}
+
+.profile-title {
+    font-size: 26px;
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.profile-box p {
+    font-size: 15px;
+    margin: 8px 0;
+    color: #333;
+}
+
+/* Bouton Modifier Profil */
+.profile-box a button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-size: 400% 400%;
+}
+
+.profile-box a button:hover {
+    animation: gradientMove 5s linear infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+</style>
+</head>
+
+<body>
+<header>
+    <div class="header-left">
+        <a href="{% url 'welcome' %}">
+            <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
+        </a>
+        <span>
+    {{ request.user.first_name }} {{ request.user.last_name }}
+    {% if request.user.profile.statut %}
+        <br>{{ request.user.profile.statut }}
+    {% endif %}
+</span>
+
+    </div>
+
+    <div class="header-right">
+        <a href="{% url 'profile' request.user.username %}"><button>Profil</button></a>
+        <button id="logoutBtn">Se déconnecter</button>
+    </div>
+</header>
+
+<div class="profile-box">
+    {% if profile.image %}
+        <img src="{{ profile.image.url }}" class="profile-img">
+    {% else %}
+        <img src="{% static 'images/default-avatar.png' %}" class="profile-img">
+    {% endif %}
+
+    <h1 class="profile-title">Profil</h1>
+
+    <p><strong>Nom :</strong> {{ nom }}</p>
+    <p><strong>Prénom :</strong> {{ prenom }}</p>
+    <p><strong>Téléphone :</strong> {{ tel }}</p>
+    <p><strong>Statut :</strong> {{ statut }}</p>
+
+    {% if profile.bio %}
+        <p>{{ profile.bio }}</p>
+    {% endif %}
+
+    {% if request.user == profile.user %}
+        <a href="{% url 'edit_profile' %}">
+            <button>Modifier le profil</button>
+        </a>
+    {% endif %}
+</div>
+</body>
+</html>
