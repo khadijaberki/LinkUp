@@ -145,8 +145,17 @@ button[type="submit"]:hover {
 <body>
 <header>
     <div class="header-left">
-        <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
-        <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
+        <a href="{% url 'welcome' %}">
+            <img src="{% static 'images/linkup logo 2.png' %}" alt="Logo">
+        </a>
+        <span>
+    {{ request.user.first_name }} {{ request.user.last_name }}
+    {% if statut %}
+    <br>{{ statut }}
+   {% endif %}
+
+</span>
+
     </div>
 
     <div class="header-right">
@@ -169,6 +178,9 @@ button[type="submit"]:hover {
 
         <label>Téléphone</label>
         <input type="text" name="tel" value="{{ tel }}">
+     <label>Status</label>
+    <input type="text" name="statut" value="{{ statut }}">
+
 
         <button type="submit">Enregistrer les modifications</button>
     </form>

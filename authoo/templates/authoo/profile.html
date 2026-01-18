@@ -208,9 +208,10 @@ header {
         </a>
         <span>
     {{ request.user.first_name }} {{ request.user.last_name }}
-    {% if request.user.profile.statut %}
-        <br>{{ request.user.profile.statut }}
-    {% endif %}
+    {% if statut %}
+    <br>{{ statut }}
+   {% endif %}
+
 </span>
 
     </div>

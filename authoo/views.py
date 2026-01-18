@@ -12,6 +12,13 @@ from django.db.models import Q
 import random
 from django.db import IntegrityError
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate, login
+from django.db import IntegrityError
+from authoo.models import Profile, Etudiant, Employe
+
 def register_view(request):
     error = None
 
@@ -29,14 +36,16 @@ def register_view(request):
             error = "Veuillez remplir tous les champs obligatoires."
             return render(request, 'register.html', {'error': error})
 
-        # Générer un username unique
-        base_username = f"{nom.lower()}.{prenom.lower()}"
-        while True:
-            username = f"{base_username}{random.randint(100,9999)}"
-            if not User.objects.filter(username=username).exists():
-                break
+        # Générer un username simple et unique : nom + prénom
+        username = f"{nom.lower()}{prenom.lower()}"
+        original_username = username
+        count = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{original_username}{count}"
+            count += 1
 
         try:
+            # Créer l'utilisateur
             user = User.objects.create(
                 username=username,
                 first_name=prenom,
@@ -44,8 +53,12 @@ def register_view(request):
                 password=make_password(password)
             )
 
-            # Créer profile vide
-            Profile.objects.create(user=user, tel=tel, faculty=faculty)
+            # Créer profile vide avec tel et statut
+            profile = Profile.objects.create(
+                user=user,
+                tel=tel,
+                statut="Étudiant" if role == "etudiant" else "Employé"
+            )
 
             # Créer Etudiant ou Employe
             if role == 'etudiant':
@@ -102,6 +115,7 @@ def register_view(request):
             error = "Un problème est survenu. Veuillez réessayer."
 
     return render(request, 'register.html', {'error': error})
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -200,20 +214,8 @@ def profile_view(request, username):
     user = get_object_or_404(User, username=username)
     profile, created = Profile.objects.get_or_create(user=user)
 
-    statut = ""
-    tel = ""
-
-    try:
-        etudiant = Etudiant.objects.get(user=user)
-        statut = "Étudiant"
-        tel = etudiant.tel
-    except Etudiant.DoesNotExist:
-        try:
-            employe = Employe.objects.get(user=user)
-            statut = "Employé"
-            tel = employe.tel
-        except Employe.DoesNotExist:
-            pass
+    statut = profile.statut  # "Étudiant" ou "Employé"
+    tel = profile.tel if profile.tel else ""
 
     context = {
         'profile': profile,
@@ -224,6 +226,7 @@ def profile_view(request, username):
     }
 
     return render(request, 'authoo/profile.html', context)
+
 
 
 @login_required
@@ -247,9 +250,12 @@ def edit_profile(request):
             employe.save()
 
         profile.bio = request.POST.get('bio')
+        profile.statut = request.POST.get('statut')
 
         if request.FILES.get('image'):
             profile.image = request.FILES.get('image')
+       
+        profile.tel = tel 
 
         profile.save()
         return redirect('profile', username=request.user.username)
@@ -259,6 +265,8 @@ def edit_profile(request):
         'nom': request.user.last_name,
         'prenom': request.user.first_name,
         'tel': etudiant.tel if etudiant else employe.tel if employe else '',
+        'statut': profile.statut,
+ 
     }
 
     return render(request, 'authoo/edit_profile.html', context)

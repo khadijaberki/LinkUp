@@ -60,12 +60,14 @@ class Job(models.Model):
     # authoo/models.py
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
-    tel = models.CharField(max_length=20, blank=True)
-    faculty = models.CharField(max_length=100, blank=True)
+    tel = models.CharField(max_length=20, blank=True, null=True)
+    statut = models.CharField(
+        max_length=20,
+        choices=[('Étudiant', 'Étudiant'), ('Employé', 'Employé')],
+        blank=True,
+        null=True
+    )
 
-    def __str__(self):
-        return self.user.username
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -83,7 +85,7 @@ class Friend(models.Model):
     friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friend_of")
 
     class Meta:
-        unique_together = ('user', 'friend')
+        unique_together = ('user', 'friend') 
 
 
    
